@@ -67,7 +67,7 @@ export default function LoadingScreen() {
             letterSpacing: '0.06em',
           }}
         >
-          {loaded} / {total} models
+          {loaded} / {total} 
         </Typography>
       )}
     </Box>
