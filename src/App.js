@@ -1,16 +1,22 @@
-import logo from './logo.svg';
 import './App.css';
 import { Box, ThemeProvider } from '@mui/material';
 import theme from './Themes/Theme';
 import { Canvas } from '@react-three/fiber';
+import { Suspense } from 'react';
 import SolarSystemPlane from './Components/SolarSystemPlane';
 import InformationPlane from './Components/InformationPlane';
+import LoadingScreen from './Components/LoadingScreen';
 import { useRef, useState } from 'react';
+
 function App() {
   const selectedPlanet = useRef(0);
   const [selectedPlanetState, setSelectedPlanetState] = useState(0);
+
   return (
     <ThemeProvider theme={theme}>
+      {/* Full-screen loading overlay — lives outside Canvas so it covers everything */}
+      <LoadingScreen />
+
       <Box sx={{
         display: 'flex',
         justifyContent: 'center',
@@ -21,9 +27,9 @@ function App() {
         position: 'relative',
         zIndex: 0,
       }}>
-        <InformationPlane selectedPlanetState={selectedPlanetState}/>
+        <InformationPlane selectedPlanetState={selectedPlanetState} />
         <Box
-          sx={(theme) => ({
+          sx={{
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -31,7 +37,7 @@ function App() {
             backgroundColor: "black",
             position: 'relative',
             zIndex: 0,
-          })}
+          }}
         >
           <Canvas style={{
             width: '100vw',
@@ -39,14 +45,19 @@ function App() {
             display: 'block',
             margin: 0,
             padding: 0,
-            // backgroundColor: 'black',
             position: 'absolute',
           }}>
-            <SolarSystemPlane selectedPlanetState={selectedPlanetState} selectedPlanet={selectedPlanet} setSelectedPlanetState={setSelectedPlanetState}/>
+            {/* Suspense catches the Promises thrown by useLoader while models download */}
+            <Suspense fallback={null}>
+              <SolarSystemPlane
+                selectedPlanetState={selectedPlanetState}
+                selectedPlanet={selectedPlanet}
+                setSelectedPlanetState={setSelectedPlanetState}
+              />
+            </Suspense>
           </Canvas>
         </Box>
       </Box>
-
     </ThemeProvider>
   );
 }
